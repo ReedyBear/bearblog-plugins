@@ -136,7 +136,9 @@
             function(event){
                 // prevent printing a new line in the header content box
                 if (event.key == 'Enter'
-                    ||event.key == ' '){
+                    ||event.key == ' '
+                    ||event.key == 'Backspace'
+                ){
                     event.stopPropagation();
                     event.preventDefault();
                 } 
@@ -149,6 +151,11 @@
                 if (event.target.tagName !== 'BUTTON')return;
                 if (event.key != 'Enter' 
                     && event.key != ' ')return;
+                if (event.key == 'Backspace'){
+                    event.stopPropagation();
+                    event.preventDefault();
+                    return;
+                }
 
 
                 event.stopPropagation();
@@ -248,9 +255,14 @@
     }
 
     Plugin.show_autocomplete = function(event){
-        if (event.key == 'Tab'){
+        if (event.key == 'Tab'
+            || event.key == 'Escape'
+        ){
             return;
-        } else if (event.key == 'Escape') return;
+        } else if (event.key == 'Backspace'
+            && event.target.tagName == 'BUTTON'){
+            return;
+        }
 
         const sel = document.getSelection();
         const node = sel.anchorNode;
