@@ -237,21 +237,40 @@
         }
     }
 
-    /* hide autocomplete if a click happens anywhere outside of the spot where you type tags */
+    /** hide autocomplete if a click happens anywhere outside of the spot where you type tags */
     Plugin.click_hide_autocomplete = function(event){
         const header = document.querySelector('div#header_content');
         if (!header.contains(event.target)){
             Plugin.autosuggest_box.style.display = "none";
             return;
         }
+
+        if (!Plugin.is_tags_entry()){
+            Plugin.autosuggest_box.style.display = "none";
+        }
+        
+    }
+
+    /** Check if the caret is int he portion of #header_content where the taglist is typed */
+    Plugin.is_tags_entry = function(){
+        /// NOTE: Plugin.text_node must be set in this function because its node is dynamic. User could erase the node, then make a newline and write "tags: ".
         const sel = document.getSelection();
         const node = sel.anchorNode;
         const text = node.textContent;
-        if (!text.startsWith('tags:')){
-            Plugin.autosuggest_box.style.display = "none";
-            return;
+        if (text.startsWith('tags:')){
+            Plugin.text_node = node;
+            return true;
         }
-        
+
+        const prev_node = node.previousSibling;
+        if (prev_node == null)return false;
+        if (prev_node.innerText.indexOf("tags:") !== -1){
+            Plugin.text_node = node;
+            return true;
+        }
+
+
+        return false;
     }
 
     Plugin.show_autocomplete = function(event){
@@ -264,18 +283,15 @@
             return;
         }
 
-        const sel = document.getSelection();
-        const node = sel.anchorNode;
-        const text = node.textContent;
-        if (!text.startsWith('tags:')){
+        if (!Plugin.is_tags_entry()){
             Plugin.autosuggest_box.style.display = "none";
             return;
         }
-        /// NOTE: We can't set this anywhere else because the node listing tags is not fixed. User could erase that line, then make a new line, or something
-        Plugin.text_node = node;
-
 
         //////// GET WORD BEING CURRENTLY TYPED (and selection range) ////////
+        const sel = document.getSelection();
+        const node = sel.anchorNode;
+        const text = node.textContent;
 
         // Find the beginning of the word currently being typed
         // There should be a space, a comma, or a colon before any tag
