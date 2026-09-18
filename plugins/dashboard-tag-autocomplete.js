@@ -15,7 +15,7 @@
         /** maximum number of suggestions to display. */
         max_suggestions: 10,
         /** set 'true' to show autosuggestion even when you the word-under-cursor is empty */
-        allow_empty_autosuggest: true,
+        allow_empty_autosuggest: false,
 
         /* As long as the word you typed is contained in your tag, it is displayed. Set to 'true' and only tags STARTING with what you typed will be displayed */
         start_match_only: false,
